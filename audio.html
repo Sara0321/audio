@@ -2,9 +2,262 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <!--重置样式-->
+    <link rel="stylesheet" href="css/reset.css"/>
     <title>支持音频拖动</title>
+    <style type="text/css">
+        .body{
+            width: 100%;
+            height: auto;
+            padding: 2rem 0;
+        }
+        .audioBox{
+            width: 100%;
+            height: auto;
+            margin-bottom:2rem;
+            padding: 0 2rem;
+        }
+        .audio{
+            width: 100%;
+            height: 9rem;
+            background: #fcfcfc;
+            border: .1rem solid #ededed;
+            border-radius: .4rem;
+            position: relative;
+            padding-left: 5.5rem;
+        }
+        .state{
+            width: 3.8rem;
+            height: 3.8rem;
+            background-color: #fff;
+            border-radius: 50%;
+            border: .3rem solid #09bb07;
+            position: absolute;
+            left: 1rem;
+            top: 2.6rem;
+            z-index: 1;
+            cursor: pointer;
+        }
+        .state.play{
+            background: url(http://media.youshu.cc/readwith/media/picture/59118810a032c.png) center center no-repeat;
+            background-size: 50% auto;
+        }
+        .state.pause{
+            background: url(http://media.youshu.cc/readwith/media/picture/59118810be37f.gif) center center no-repeat;
+            background-size: 50% auto;
+        }
+        .intro{
+            width: 100%;
+            height: auto;
+            display: block;
+            padding: 1rem 1rem .5rem;
+        }
+        .intro .title{
+            font-size: 1.5rem;
+            color: #222;
+            line-height: 2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: normal;
+        }
+        .intro .from{
+            font-size: 1.2rem;
+            color: #999;
+            line-height: 2rem;
+        }
+        .progress{
+            width: 100%;
+            height: 2rem;
+            padding-top: 1rem;
+        }
+        .bgBar{
+            width: 100%;
+            height: .2rem;
+            border-radius: .2rem;
+            background: #eaeaea;
+            position: relative;
+        }
+        .bar{
+            height: .2rem;
+            border-radius: .2rem;
+            background: #09bb07;
+        }
+        .spot{
+            width: 1.2rem;
+            height: 1.2rem;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            margin-top: -.6rem;
+            margin-left: -.6rem;
+            display: flex;
+            background: rgba(6,187,11,.3);
+            cursor: pointer;
+        }
+        .spot:before{
+            content: '';
+            width: .8rem;
+            height: .8rem;
+            display: block;
+            margin: auto;
+            background: #06be00;
+            border-radius: 50%;
+        }
+        .time{
+            width: 100%;
+            font-size: 1.2rem;
+            color: #ccc;
+            line-height: 1.6rem;
+            height: 1.6rem;
+        }
+        .current{
+            float: left;
+        }
+        .total{
+            float: right;
+        }
+    </style>
 </head>
 <body>
-
+<section class="body" style="display: none;">
+    <section class="audioBox">
+        <audio id="audio" src="mp3/instrumental.mp3" preload="auto"></audio>
+        <section class="audio">
+            <section id="state" class="state play"></section>
+            <section class="intro">
+                <h2 class="title">我们爱过就好</h2>
+                <p class="from">作者：薛之谦</p>
+                <!--进度条-->
+                <section class="progress">
+                    <section id="width" class="bgBar">
+                        <p id="bar" class="bar" style="width: 0%"></p>
+                        <p id="spot" class="spot" style="left: 0%;"></p>
+                    </section>
+                </section>
+                <!--时间-->
+                <section class="time">
+                    <span id="current" class="current">00:00</span>
+                    <span id="total" class="total">00:00</span>
+                </section>
+            </section>
+        </section>
+    </section>
+</section>
+<script src="js/jquery-1.10.1.min.js"></script>
+<script>
+    (function(){
+        // 计算html的font-size  iphone6: font-size=10px;
+        function resizeBaseFontSize(){
+            var rootHtml = document.documentElement,
+                deviceWidth = rootHtml.clientWidth;
+            if(deviceWidth > 800){
+                deviceWidth = 800;
+            }
+            rootHtml.style.fontSize = deviceWidth /37.5 + "px";
+        }
+        resizeBaseFontSize();
+        window.addEventListener("resize", resizeBaseFontSize, false);
+        window.addEventListener("orientationchange", resizeBaseFontSize, false);
+        //音频
+        var audio=document.getElementById("audio"),
+            bar=document.getElementById("bar"),
+            spot=document.getElementById("spot"),
+            state=document.getElementById("state"),
+            width=document.getElementById("width"),
+            current=document.getElementById("current"),
+            total=document.getElementById("total"),
+            audio_step=0,
+            totalTime=0;
+        //加载页面时展示总时长
+        totalTime=setInterval(function(){
+            if(audio.duration){
+                clearInterval(totalTime);
+                $(total).text(changeTime(audio.duration));
+                $('.body').show();
+            }
+        },100);
+        //点击播放
+        $('#state').on('click',function () {
+            var _this=$(this);
+            if(audio.paused){
+                _this.removeClass('play').addClass('pause');
+                audio.play();
+                audioPlay();
+            }
+            else{
+                audio.pause();
+                _this.removeClass('pause').addClass('play');
+                clearInterval(audio_step)
+            }
+        });
+        //播放进度
+        function audioPlay() {
+            audio_step = setInterval(function(){
+                var Percentage = audio.currentTime/audio.duration;
+                bar.style.width = Percentage*100+"%";
+                spot.style.left = Percentage*100+"%";
+                $(current).text(changeTime(audio.currentTime));
+                if(audio.currentTime>=audio.duration){
+                    $(state).removeClass('pause').addClass('play');
+                    bar.style.width = 0+"%";
+                    spot.style.left = 0+"%";
+                    clearInterval(audio_step)
+                }
+            },100)
+        }
+        //拖动
+        (function load() {
+            if(width){
+                var w=width.clientWidth;
+                var l,startPosition,endPosition,deltaX;
+                spot.addEventListener('touchstart', function(e) {
+                    // 如果这个元素的位置内只有一个手指的话
+                    if (event.targetTouches.length == 1) {
+                        e.preventDefault();// 阻止浏览器默认事件，重要
+                        l=bar.clientWidth;
+                        var touch = e.targetTouches[0];
+                        startPosition=touch.pageX;
+                    }
+                }, false);
+                spot.addEventListener('touchmove', function(e) {
+                    // 如果这个元素的位置内只有一个手指的话
+                    if (event.targetTouches.length == 1) {
+                        e.preventDefault();// 阻止浏览器默认事件，重要
+                        var touch = e.targetTouches[0];
+                        endPosition=touch.pageX;
+                        deltaX=endPosition-startPosition;
+                        var percent=((deltaX+l)/w);
+                        if(percent<0){
+                            percent=0;
+                        }else if(percent>1){
+                            percent=1
+                        }
+                        audio.currentTime=audio.duration*percent;
+                        $(current).text(audio.currentTime);
+                        bar.style.width=percent*100+'%';
+                        spot.style.left=percent*100+'%';
+                    }
+                }, false);
+            }
+        })();
+        //时间
+        function changeTime(time) {
+            if(time){
+                var minutes = parseInt(time/60%60),  //分钟
+                    seconds = parseInt(time%60);  //分钟
+                if(minutes<10){
+                    minutes='0'+minutes;
+                }
+                if(seconds<10){
+                    seconds='0'+seconds;
+                }
+                return minutes+':'+seconds
+            }
+        }
+    })();
+</script>
 </body>
 </html>

@@ -1,0 +1,118 @@
+html {
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  font-size: 62.5%;
+}
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+*{-webkit-tap-highlight-color:rgba(0,0,0,0)}
+:before,
+:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.72;
+  color: #333;
+  background-color: white;
+  min-width: 320px;
+  height: 100%;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td, hr, button, article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
+  margin: 0;
+  padding: 0;
+}
+article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary {
+  display: block;
+}
+html, button, select, textarea, input{
+  font-family: 'microsoft yahei', Verdana, Arial, Helvetica, sans-serif;
+}
+ul, ol {
+  list-style: none outside none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+td, th {
+  padding: 0;
+}
+a{
+  text-decoration: none;
+}
+a:active {
+  outline: 0;
+  text-decoration: none;
+}
+img {
+  border: 0;
+  vertical-align: middle;
+}
+pre {
+  overflow: auto;
+  white-space: pre;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+textarea {
+  overflow: auto;
+  resize: none;
+}
+input {
+  line-height: normal;
+  -webkit-appearance: none;
+}
+input,select,textarea {
+  border: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  border-radius: 0;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+::-webkit-clear-button {
+  -webkit-appearance: none;
+}
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  color: #ccc;
+}
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+  color: #ccc;
+}
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: #ccc;
+}
+select:focus, option:focus, select:hover, option:hover,textarea:focus,input:focus {
+  outline: none;
+}
+button {
+  overflow: visible;
+  outline: none;
+  border: none;
+}
+b,strong {
+  font-weight: 600;
+}
+i,em {
+  font-style: italic;
+}
